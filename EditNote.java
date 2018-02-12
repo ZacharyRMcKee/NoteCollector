@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 /**
@@ -41,6 +43,24 @@ public class EditNote extends AppCompatActivity {
         noteText.setText(note.getText());
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.save_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.saveNote:
+                saveNote();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
     public void onBackPressed()
     {
         note.setText(noteText.getText().toString());
@@ -61,12 +81,7 @@ public class EditNote extends AppCompatActivity {
                 builder.setPositiveButton("SAVE & EXIT", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent data = new Intent();
-                        data.putExtra("NOTE", note);
-                        data.putExtra("POS",notePosition);
-                        setResult(RESULT_OK, data);
-                        // do other stuff
-                        EditNote.super.onBackPressed();
+                        saveNote();
                     }
                 });
                 builder.setNegativeButton("GO BACK", new DialogInterface.OnClickListener() {
@@ -87,6 +102,25 @@ public class EditNote extends AppCompatActivity {
             }
         }
 
+
+    }
+    private void saveNote()
+    {
+        note.setText(noteText.getText().toString());
+        note.setTitle(noteTitle.getText().toString());
+        if(noteTitle.getText().toString().equals(""))
+        {
+            setResult(RESULT_CANCELED,new Intent());
+            super.onBackPressed();
+        }
+        else
+        {
+            Intent data = new Intent();
+            data.putExtra("NOTE", note);
+            data.putExtra("POS",notePosition);
+            setResult(RESULT_OK, data);
+            EditNote.super.onBackPressed();
+        }
 
     }
 }

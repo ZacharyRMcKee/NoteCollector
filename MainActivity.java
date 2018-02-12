@@ -1,5 +1,6 @@
 package com.zacharyrmckee.notecollector;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
@@ -7,15 +8,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity   extends AppCompatActivity
                             implements View.OnLongClickListener, View.OnClickListener
@@ -28,6 +36,8 @@ public class MainActivity   extends AppCompatActivity
     private RecyclerView recyclerView;
     private NoteAdapter noteAdapter;
     private static final String TAG = "MainActivity";
+    SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss:SS Z yyyy",new Locale("us"));
+
     public RecyclerView getRecyclerView() {
         return recyclerView;
     }
@@ -56,6 +66,7 @@ public class MainActivity   extends AppCompatActivity
         switch(item.getItemId())
         {
             case R.id.info:
+                startActivity(new Intent(MainActivity.this,ShowInfo.class));
                 break;
             case R.id.newNote:
                 Intent intent = new Intent(MainActivity.this,EditNote.class);
@@ -70,6 +81,12 @@ public class MainActivity   extends AppCompatActivity
         }
         return true;
     }
+    public void whenFileLoaded(ArrayList<Note> notes)
+    {
+        this.notes = notes;
+    }
+
+
     @Override
     public void onActivityResult(int requestCode,int resultCode, Intent data)
     {
@@ -119,14 +136,16 @@ public class MainActivity   extends AppCompatActivity
     }
 
     @Override
-    public boolean onLongClick(View view) {
-        int pos = recyclerView.getChildLayoutPosition(view);
+    public boolean onLongClick(final View view) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.drawable.ic_warning_black_48dp);
-
+        int pos = recyclerView.getChildLayoutPosition(view);
+        String noteName = notes.get(pos).getTitle();
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                deleteNote(view);
                 return;
                 // do other stuff
             }
@@ -138,9 +157,43 @@ public class MainActivity   extends AppCompatActivity
             }
         });
         //builder.setMessage("SAVE & EXIT back to notes menu, or GO BACK to the editor.");
-        builder.setTitle("Delete Note?");
+        builder.setTitle("Delete Note '" + noteName + "'?");
         AlertDialog dialog = builder.create();
         dialog.show();
         return false;
+    }
+    private void loadNotes()
+    {
+
+    }
+    private void saveNotes()
+    {
+        try
+        {
+            FileOutputStream fos = getApplicationContext().openFileOutput("notes.json", Context.MODE_PRIVATE);
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(fos,"UTF-8"));
+            writer.setIndent("  ");
+            writer.beginArray();
+            for(Note note : notes)
+            {
+                writer.beginObject();
+                writer.name("title").value(note.getTitle());
+                writer.name("text").value(note.getText());
+                writer.name("date").value(sdf.format(note.getLastUpdated()));
+                writer.endObject();
+            }
+            writer.endArray();
+        }
+        catch(Exception e)
+        {
+            e.getStackTrace();
+        }
+
+    }
+    private void deleteNote(View view)
+    {
+        int pos = recyclerView.getChildLayoutPosition(view);
+        notes.remove(pos);
+        noteAdapter.notifyDataSetChanged();
     }
 }
