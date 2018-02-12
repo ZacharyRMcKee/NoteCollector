@@ -1,5 +1,6 @@
 package com.zacharyrmckee.notecollector;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
- * Created by Starf on 2/11/2018.
+ * Created by ZacharyRMcKee on 2/11/2018.
  */
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
@@ -30,13 +31,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
     {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.note_list_item,parent,false);
-        itemView.setOnClickListener(new View.OnClickListener() {
+/*        itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"onClick: ");
+
+                Intent intent = new Intent(MainActivity.this,EditNote.class);
+
                 int pos = mainActivity.getRecyclerView().getChildLayoutPosition(view);
                 Note n = notes.get(pos);
-                Toast.makeText(mainActivity,n.toString(),Toast.LENGTH_LONG).show();
+
+                Toast.makeText(v.getContext(),n.toString(),Toast.LENGTH_LONG).show();
             }
         });
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -45,7 +50,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
                 Log.d(TAG, "onLongClick: ");
                 return true;
             }
-        });
+        });*/
+        itemView.setOnLongClickListener(mainActivity);
+        itemView.setOnClickListener(mainActivity);
         return new NoteViewHolder(itemView);
     }
 
@@ -54,7 +61,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
         Note note = notes.get(position);
         holder.title.setText(note.getTitle());
         holder.lastUpdated.setText(sdf.format(note.getLastUpdated()));
-        holder.text.setText(note.getText());
+        String truncated = (note.getText().length() > 80) ? note.getText().substring(0,80) + "..."
+                : note.getText();
+
+        holder.text.setText(truncated);
 
     }
 

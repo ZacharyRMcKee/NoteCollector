@@ -1,12 +1,15 @@
 package com.zacharyrmckee.notecollector;
 
+import android.support.annotation.NonNull;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by Starf on 2/11/2018.
+ * Created by ZacharyRMcKee on 2/11/2018.
  */
 
-public class Note {
+public class Note implements Comparable<Note>, Serializable {
     private String title;
     private String text;
     private Date lastUpdated;
@@ -23,8 +26,17 @@ public class Note {
         this.lastUpdated = new Date();
     }
 
+    @Override
+    public String toString() {
+        return "Note{" +
+                "title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", lastUpdated=" + lastUpdated +
+                '}';
+    }
+
     public Note() {
-        this.title = "Untitled";
+        this.title = "";
         this.text = "";
         this.lastUpdated = new Date();
     }
@@ -53,4 +65,8 @@ public class Note {
         this.lastUpdated = lastUpdated;
     }
 
+    @Override
+    public int compareTo(@NonNull Note note) {
+        return note.getLastUpdated().compareTo(getLastUpdated());
+    }
 }

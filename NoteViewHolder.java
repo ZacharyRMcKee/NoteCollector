@@ -4,12 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zacharyrmckee.notecollector.R;
-
-import org.w3c.dom.Text;
-
 /**
- * Created by Starf on 2/11/2018.
+ * Created by ZacharyRMcKee on 2/11/2018.
  */
 
 public class NoteViewHolder extends RecyclerView.ViewHolder
@@ -21,9 +17,9 @@ public class NoteViewHolder extends RecyclerView.ViewHolder
     public NoteViewHolder(View view)
     {
         super(view);
-        title = (TextView) view.findViewById(R.id.noteTitle);
+        title = (TextView) view.findViewById(R.id.editTitle);
         lastUpdated = (TextView) view.findViewById(R.id.noteDate);
-        text = (TextView) view.findViewById(R.id.noteText);
+        text = (TextView) view.findViewById(R.id.editText);
 
     }
 }
